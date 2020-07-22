@@ -1,0 +1,124 @@
+// This file is part of OurNotepad project
+// Copyright (C)2020 Mapoet Niphy<mapoet.niphy@gmail.com>
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either
+// version 2 of the License, or (at your option) any later version.
+//
+// Note that the GPL places important restrictions on "derived works", yet
+// it does not provide a detailed definition of that term.  To avoid
+// misunderstandings, we consider an application to constitute a
+// "derivative work" for the purpose of this license if it does any of the
+// following:
+// 1. Integrates source code from OurNotepad.
+// 2. Integrates/includes/aggregates OurNotepad into a proprietary executable
+//    installer, such as those produced by InstallShield.
+// 3. Links to a library or executes a program that does any of the above.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#pragma once
+#include "Notepad_plus.h"
+
+
+
+const TCHAR COMMAND_ARG_HELP[] = TEXT("Usage :\r\
+\r\
+OurNotepad [--help] [-multiInst] [-noPlugin] [-lLanguage] [-LlangCode] [-nLineNumber] [-cColumnNumber] [-pPosition] [-xLeftPos] [-yTopPos] [-nosession] [-notabbar] [-ro] [-systemtray] [-loadingTime] [-alwaysOnTop] [-openSession] [-r] [-qnEasterEggName | -qtText | -qfCntentFileName] [-qSpeed1|2|3] [-quickPrint] [-openFoldersAsWorkspace] [filePath]\r\
+\r\
+--help : This help message\r\
+-multiInst : Launch another OurNotepad instance\r\
+-noPlugin : Launch OurNotepad without loading any plugin\r\
+-l : Open file or display ghost typing with syntax highlighting of choice\r\
+-L : Apply indicated localization, langCode is browser language code\r\
+-n : Scroll to indicated line on filePath\r\
+-c : Scroll to indicated column on filePath\r\
+-p : Scroll to indicated position on filePath\r\
+-x : Move OurNotepad to indicated left side position on the screen\r\
+-y : Move OurNotepad to indicated top position on the screen\r\
+-nosession : Launch OurNotepad without previous session\r\
+-notabbar : Launch OurNotepad without tabbar\r\
+-ro : Make the filePath read only\r\
+-systemtray : Launch OurNotepad directly in system tray\r\
+-loadingTime : Display OurNotepad loading time\r\
+-alwaysOnTop : Make OurNotepad always on top\r\
+-openSession : Open a session. filePath must be a session file\r\
+-r : Open files recursively. This argument will be ignored\r\
+     if filePath contain no wildcard character\r\
+-qn : Launch ghost typing to display easter egg via its name\r\
+-qt : Launch ghost typing to display a text via the given text\r\
+-qf : Launch ghost typing to display a file content via the file path\r\
+-qSpeed : Ghost typing speed. Value from 1 to 3 for slow, fast and fastest\r\
+-quickPrint : Print the file given as argument then quit OurNotepad\r\
+-openFoldersAsWorkspace: open filePath of folder(s) as workspace\r\
+filePath : file or folder name to open (absolute or relative path name)\r\
+");
+
+
+
+
+
+class Notepad_plus_Window : public Window
+{
+public:
+	void init(HINSTANCE, HWND, const TCHAR *cmdLine, CmdLineParams *cmdLineParams);
+
+	bool isDlgsMsg(MSG *msg) const;
+
+	HACCEL getAccTable() const
+	{
+		return _notepad_plus_plus_core.getAccTable();
+	}
+
+	bool emergency(const generic_string& emergencySavedDir)
+	{
+		return _notepad_plus_plus_core.emergency(emergencySavedDir);
+	}
+
+	bool isPrelaunch() const
+	{
+		return _isPrelaunch;
+	}
+
+	void setIsPrelaunch(bool val)
+	{
+		_isPrelaunch = val;
+	}
+
+	generic_string getPluginListVerStr() const
+	{
+		return _notepad_plus_plus_core.getPluginListVerStr();
+	}
+
+	virtual void destroy()
+	{
+		::DestroyWindow(_hSelf);
+	}
+
+	static const TCHAR * getClassName()
+	{
+		return _className;
+	}
+
+	static HWND gNppHWND;	//static handle to OurNotepad window, NULL if non-existant
+
+
+private:
+	Notepad_plus _notepad_plus_plus_core;
+	static LRESULT CALLBACK Notepad_plus_Proc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
+	LRESULT runProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
+
+	static const TCHAR _className[32];
+	bool _isPrelaunch = false;
+	bool _disablePluginsManager = false;
+
+	QuoteParams _quoteParams; // keep the availability of quote parameters for thread using
+	std::wstring _userQuote; // keep the availability of this string for thread using
+};
