@@ -64,7 +64,7 @@ INT_PTR CALLBACK AboutDlg::run_dlgProc(UINT message, WPARAM wParam, LPARAM lPara
 			_emailLink.create(::GetDlgItem(_hSelf, IDC_AUTHOR_NAME), TEXT("mailto:mapoet.niphy@gmail.com"));
 
             _pageLink.init(_hInst, _hSelf);
-            _pageLink.create(::GetDlgItem(_hSelf, IDC_HOME_ADDR), TEXT("https://notepad-plus-plus.org/"));
+            _pageLink.create(::GetDlgItem(_hSelf, IDC_HOME_ADDR), TEXT("https://mapoet.github.io/"));
 
 			getClientRect(_rc);
 
